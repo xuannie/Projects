@@ -8,8 +8,6 @@ import javax.swing.JScrollPane;
 
 import java.awt.BorderLayout;
 
-import javax.swing.JTextField;
-
 import java.awt.GridBagLayout;
 
 import javax.swing.JButton;
@@ -121,11 +119,11 @@ public class Calculator2 {
 		gbc_btnC.gridy = 0;
 		panel_1.add(btnC, gbc_btnC);
 		
-		button_15 = new JButton("÷");
+		button_15 = new JButton("/");
 		button_15.setFont(new Font("DejaVu Sans", Font.BOLD, 14));
 		button_15.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				tf = tf + "÷";
+				tf = tf + "/";
 				textField.setText(tf);
 			}
 		});
@@ -151,7 +149,7 @@ public class Calculator2 {
 		gbc_btnX.gridy = 0;
 		panel_1.add(btnX, gbc_btnX);
 		
-		button_16 = new JButton("←");
+		button_16 = new JButton("\u2190");
 		button_16.setFont(new Font("DejaVu Sans", Font.BOLD, 14));
 		button_16.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -213,11 +211,11 @@ public class Calculator2 {
 		gbc_button_2.gridy = 1;
 		panel_1.add(button_2, gbc_button_2);
 		
-		button_14 = new JButton("-");
+		button_14 = new JButton("\u2212");
 		button_14.setFont(new Font("DejaVu Sans", Font.BOLD, 14));
 		button_14.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				tf = tf + "-";
+				tf = tf + "\u2212";
 				textField.setText(tf);
 			}
 		});
