@@ -26,6 +26,7 @@ import java.awt.Font;
 import javax.swing.border.MatteBorder;
 
 import java.awt.Color;
+import java.util.ArrayList;
 
 public class Calculator2 implements KeyListener{
 
@@ -54,6 +55,7 @@ public class Calculator2 implements KeyListener{
 	private JButton button_16;
 	private String tf = "";
 	private JButton button_17;
+	private ArrayList<String> input = new ArrayList<String>();
 
 	/**
 	 * Launch the application.

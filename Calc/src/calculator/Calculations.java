@@ -4,19 +4,14 @@ import java.util.ArrayList;
 
 public class Calculations {
 	
-	protected ArrayList<String> al = new ArrayList<String>();
+	protected ArrayList<String> input = new ArrayList<String>();
 	
 	public Calculations(){
 		
 	}
 	
-	public Calculations(String formula){
-		String[]sep = formula.split(" ");
-		String temp;
-		
-        //TODO modify formula  
-		for(int i=0; i<sep.length; i++)
-			al.add(sep[i]);
+	public Calculations(String text){
+		input.add(text);
 	}
 	
 	private void calc(){
