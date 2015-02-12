@@ -5,6 +5,8 @@ import java.awt.event.KeyListener;
 
 public class MyKeyListener implements KeyListener {
 	
+	public char key;
+	
 	@Override
 	public void keyPressed(KeyEvent arg0) {
 		// TODO Auto-generated method stub
@@ -20,7 +22,7 @@ public class MyKeyListener implements KeyListener {
 	@Override
 	public void keyTyped(KeyEvent arg0) {
 		// TODO Auto-generated method stub
-		
+		key = arg0.getKeyChar();
 	}
 
 }
