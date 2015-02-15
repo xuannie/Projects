@@ -15,7 +15,6 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -23,10 +22,8 @@ import javax.swing.JTextArea;
 
 import java.awt.Font;
 
-import javax.swing.border.MatteBorder;
+import javax.swing.JTextField;
 
-import java.awt.Color;
-import java.util.ArrayList;
 
 public class Calculator2 implements KeyListener{
 
@@ -55,7 +52,8 @@ public class Calculator2 implements KeyListener{
 	private JButton button_16;
 	private String tf = "";
 	private JButton button_17;
-	private ArrayList<String> input = new ArrayList<String>();
+	private JTextField TypeField;
+	private Calculations getResult;
 
 	/**
 	 * Launch the application.
@@ -97,11 +95,17 @@ public class Calculator2 implements KeyListener{
 		textField.setEditable(false);
 		textField.addKeyListener((KeyListener)this);
 		
-		textField.setFont(new Font("DejaVu Sans", Font.PLAIN, 16));
+		textField.setFont(new Font("DejaVu Sans", Font.PLAIN, 12));
 		textField.setRows(3);
 		textField.setColumns(10);
 		JScrollPane scroll = new JScrollPane(textField);
 		panel.add(scroll, BorderLayout.NORTH);
+		
+		TypeField = new JTextField();
+		TypeField.setFont(new Font("DejaVu Sans", Font.PLAIN, 16));
+		TypeField.setEditable(false);
+		panel.add(TypeField, BorderLayout.SOUTH);
+		TypeField.setColumns(10);
 		
 		//panel_1 is button panel
 		panel_1 = new JPanel();
@@ -166,7 +170,10 @@ public class Calculator2 implements KeyListener{
 		button_16.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(tf.length()>0){
-					tf = tf.substring(0, tf.length()-1);
+					if (tf.substring(tf.length()-1).equals(" "))
+						tf = tf.substring(0,tf.length()-3);
+					else
+						tf = tf.substring(0, tf.length()-1);
 				}					
 				textField.setText(tf);
 			}
@@ -227,7 +234,7 @@ public class Calculator2 implements KeyListener{
 		button_14.setFont(new Font("DejaVu Sans", Font.BOLD, 14));
 		button_14.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				tf = tf + " \u2212 ";
+				tf = tf + " - ";
 				textField.setText(tf);
 			}
 		});
@@ -393,6 +400,9 @@ public class Calculator2 implements KeyListener{
 		button_11.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//TODO write method to conduct calculation from String and print answer in next line.
+				getResult = new Calculations(tf);
+				tf = tf + " = " + getResult; 
+				textField.setText(tf);
 			}
 		});
 		GridBagConstraints gbc_button_11 = new GridBagConstraints();
@@ -444,7 +454,10 @@ public class Calculator2 implements KeyListener{
 		
 		if(e.getKeyChar()==KeyEvent.VK_BACK_SPACE){
 			if(tf.length()>0){
-				tf = tf.substring(0, tf.length()-1);
+				if (tf.substring(tf.length() -1).equals(" "))
+					tf = tf.substring(0,tf.length()-3);
+				else
+					tf = tf.substring(0, tf.length()-1);
 			}					
 			textField.setText(tf);
 		}
@@ -455,7 +468,7 @@ public class Calculator2 implements KeyListener{
 		}
 		
 		if(e.getKeyChar()=='-'){
-			tf = tf + " \u2212 ";				
+			tf = tf + " - ";				
 			textField.setText(tf);
 		}
 		
@@ -511,6 +524,12 @@ public class Calculator2 implements KeyListener{
 		
 		if(e.getKeyChar()==KeyEvent.VK_9){
 			tf = tf + "9";
+			textField.setText(tf);
+		}
+		
+		if(e.getKeyChar()=='='){
+			tf = tf + " = ";		
+			//TODO write getResult method.
 			textField.setText(tf);
 		}
 		
