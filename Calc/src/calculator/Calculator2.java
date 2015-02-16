@@ -1,3 +1,10 @@
+/**
+ * Calculator application with basic functions and allows for parenthesis.
+ * 
+ * @author Alexis Chuah
+ * @version 2/15/2015
+ * 
+ */
 package calculator;
 
 import java.awt.EventQueue;
@@ -22,7 +29,11 @@ import javax.swing.JTextArea;
 
 import java.awt.Font;
 
-import javax.swing.JTextField;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.JTextPane;
 
 
 public class Calculator2 implements KeyListener{
@@ -50,10 +61,9 @@ public class Calculator2 implements KeyListener{
 	private JButton btnX;
 	private JButton button_15;
 	private JButton button_16;
-	private String tf = "";
 	private JButton button_17;
-	private JTextField TypeField;
-	private Calculations getResult;
+	private JTextPane typeField;
+	private Calculations result;
 
 	/**
 	 * Launch the application.
@@ -67,6 +77,8 @@ public class Calculator2 implements KeyListener{
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+				
+				
 			}
 		});
 	}
@@ -80,6 +92,8 @@ public class Calculator2 implements KeyListener{
 
 	/**
 	 * Initialize the contents of the frame.
+	 * 
+	 * Buttons with action listener and panels are all located here.
 	 */
 	private void initialize() {
 		frame = new JFrame("Calculator");
@@ -94,18 +108,19 @@ public class Calculator2 implements KeyListener{
 		textField = new JTextArea();
 		textField.setEditable(false);
 		textField.addKeyListener((KeyListener)this);
-		
 		textField.setFont(new Font("DejaVu Sans", Font.PLAIN, 12));
 		textField.setRows(3);
 		textField.setColumns(10);
 		JScrollPane scroll = new JScrollPane(textField);
 		panel.add(scroll, BorderLayout.NORTH);
 		
-		TypeField = new JTextField();
-		TypeField.setFont(new Font("DejaVu Sans", Font.PLAIN, 16));
-		TypeField.setEditable(false);
-		panel.add(TypeField, BorderLayout.SOUTH);
-		TypeField.setColumns(10);
+		typeField = new JTextPane();
+		SimpleAttributeSet attribs = new SimpleAttributeSet();
+		StyleConstants.setAlignment(attribs , StyleConstants.ALIGN_RIGHT);
+		typeField.setParagraphAttributes(attribs,true);
+		typeField.setFont(new Font("DejaVu Sans", Font.PLAIN, 16));
+		typeField.setEditable(false);
+		panel.add(typeField, BorderLayout.SOUTH);
 		
 		//panel_1 is button panel
 		panel_1 = new JPanel();
@@ -118,14 +133,13 @@ public class Calculator2 implements KeyListener{
 		gbl_panel_1.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		panel_1.setLayout(gbl_panel_1);
 		
+		//Clear button
 		btnC = new JButton("C");
 		btnC.setFont(new Font("DejaVu Sans", Font.BOLD, 14));
 		btnC.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				if(tf.length()>0){
-					tf = "";
-				}					
-				textField.setText(tf);
+				textField.setText("");
+				typeField.setText("0");
 			}
 		});
 		GridBagConstraints gbc_btnC = new GridBagConstraints();
@@ -135,12 +149,12 @@ public class Calculator2 implements KeyListener{
 		gbc_btnC.gridy = 0;
 		panel_1.add(btnC, gbc_btnC);
 		
+		//Operand buttons
 		button_15 = new JButton("/");
 		button_15.setFont(new Font("DejaVu Sans", Font.BOLD, 14));
 		button_15.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				tf = tf + " / ";
-				textField.setText(tf);
+				appendOperation('/');
 			}
 		});
 		GridBagConstraints gbc_button_15 = new GridBagConstraints();
@@ -150,12 +164,11 @@ public class Calculator2 implements KeyListener{
 		gbc_button_15.gridy = 0;
 		panel_1.add(button_15, gbc_button_15);
 		
-		btnX = new JButton("x");
+		btnX = new JButton("*");
 		btnX.setFont(new Font("DejaVu Sans", Font.BOLD, 14));
 		btnX.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				tf = tf + " x ";
-				textField.setText(tf);
+				appendOperation('*');
 			}
 		});
 		GridBagConstraints gbc_btnX = new GridBagConstraints();
@@ -165,17 +178,40 @@ public class Calculator2 implements KeyListener{
 		gbc_btnX.gridy = 0;
 		panel_1.add(btnX, gbc_btnX);
 		
+		button_13 = new JButton("+");
+		button_13.setFont(new Font("DejaVu Sans", Font.BOLD, 14));
+		button_13.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				appendOperation('+');
+			}
+		});
+		GridBagConstraints gbc_button_13 = new GridBagConstraints();
+		gbc_button_13.fill = GridBagConstraints.HORIZONTAL;
+		gbc_button_13.insets = new Insets(0, 0, 5, 0);
+		gbc_button_13.gridx = 3;
+		gbc_button_13.gridy = 2;
+		panel_1.add(button_13, gbc_button_13);
+		
+		button_14 = new JButton("\u2212");
+		button_14.setFont(new Font("DejaVu Sans", Font.BOLD, 14));
+		button_14.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				appendOperation('-');
+			}
+		});
+		GridBagConstraints gbc_button_14 = new GridBagConstraints();
+		gbc_button_14.fill = GridBagConstraints.HORIZONTAL;
+		gbc_button_14.insets = new Insets(0, 0, 5, 0);
+		gbc_button_14.gridx = 3;
+		gbc_button_14.gridy = 1;
+		panel_1.add(button_14, gbc_button_14);
+		
+		//Backspace
 		button_16 = new JButton("\u2190");
 		button_16.setFont(new Font("DejaVu Sans", Font.BOLD, 14));
 		button_16.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(tf.length()>0){
-					if (tf.substring(tf.length()-1).equals(" "))
-						tf = tf.substring(0,tf.length()-3);
-					else
-						tf = tf.substring(0, tf.length()-1);
-				}					
-				textField.setText(tf);
+				undo();
 			}
 		});
 		GridBagConstraints gbc_button_16 = new GridBagConstraints();
@@ -185,12 +221,12 @@ public class Calculator2 implements KeyListener{
 		gbc_button_16.gridy = 0;
 		panel_1.add(button_16, gbc_button_16);
 		
+		//Numbers and decimal
 		button = new JButton("7");
 		button.setFont(new Font("DejaVu Sans", Font.BOLD, 14));
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				tf = tf + "7";
-				textField.setText(tf);
+				appendDigits('7');
 			}
 		});
 		GridBagConstraints gbc_button = new GridBagConstraints();
@@ -204,8 +240,7 @@ public class Calculator2 implements KeyListener{
 		button_1.setFont(new Font("DejaVu Sans", Font.BOLD, 14));
 		button_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				tf = tf + "8";
-				textField.setText(tf);
+				appendDigits('8');
 			}
 		});
 		GridBagConstraints gbc_button_1 = new GridBagConstraints();
@@ -219,8 +254,7 @@ public class Calculator2 implements KeyListener{
 		button_2.setFont(new Font("DejaVu Sans", Font.BOLD, 14));
 		button_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				tf = tf + "9";
-				textField.setText(tf);
+				appendDigits('9');
 			}
 		});
 		GridBagConstraints gbc_button_2 = new GridBagConstraints();
@@ -230,27 +264,12 @@ public class Calculator2 implements KeyListener{
 		gbc_button_2.gridy = 1;
 		panel_1.add(button_2, gbc_button_2);
 		
-		button_14 = new JButton("\u2212");
-		button_14.setFont(new Font("DejaVu Sans", Font.BOLD, 14));
-		button_14.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				tf = tf + " - ";
-				textField.setText(tf);
-			}
-		});
-		GridBagConstraints gbc_button_14 = new GridBagConstraints();
-		gbc_button_14.fill = GridBagConstraints.HORIZONTAL;
-		gbc_button_14.insets = new Insets(0, 0, 5, 0);
-		gbc_button_14.gridx = 3;
-		gbc_button_14.gridy = 1;
-		panel_1.add(button_14, gbc_button_14);
 		
 		button_3 = new JButton("4");
 		button_3.setFont(new Font("DejaVu Sans", Font.BOLD, 14));
 		button_3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				tf = tf + "4";
-				textField.setText(tf);
+				appendDigits('4');
 			}
 		});
 		GridBagConstraints gbc_button_3 = new GridBagConstraints();
@@ -264,8 +283,7 @@ public class Calculator2 implements KeyListener{
 		button_4.setFont(new Font("DejaVu Sans", Font.BOLD, 14));
 		button_4.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				tf = tf + "5";
-				textField.setText(tf);
+				appendDigits('5');
 			}
 		});
 		GridBagConstraints gbc_button_4 = new GridBagConstraints();
@@ -279,8 +297,7 @@ public class Calculator2 implements KeyListener{
 		button_5.setFont(new Font("DejaVu Sans", Font.BOLD, 14));
 		button_5.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				tf = tf + "6";
-				textField.setText(tf);
+				appendDigits('6');
 			}
 		});
 		GridBagConstraints gbc_button_5 = new GridBagConstraints();
@@ -290,27 +307,11 @@ public class Calculator2 implements KeyListener{
 		gbc_button_5.gridy = 2;
 		panel_1.add(button_5, gbc_button_5);
 		
-		button_13 = new JButton("+");
-		button_13.setFont(new Font("DejaVu Sans", Font.BOLD, 14));
-		button_13.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				tf = tf + " + ";
-				textField.setText(tf);
-			}
-		});
-		GridBagConstraints gbc_button_13 = new GridBagConstraints();
-		gbc_button_13.fill = GridBagConstraints.HORIZONTAL;
-		gbc_button_13.insets = new Insets(0, 0, 5, 0);
-		gbc_button_13.gridx = 3;
-		gbc_button_13.gridy = 2;
-		panel_1.add(button_13, gbc_button_13);
-		
 		button_6 = new JButton("1");
 		button_6.setFont(new Font("DejaVu Sans", Font.BOLD, 14));
 		button_6.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				tf = tf + "1";
-				textField.setText(tf);
+				appendDigits('1');
 			}
 		});
 		GridBagConstraints gbc_button_6 = new GridBagConstraints();
@@ -324,8 +325,7 @@ public class Calculator2 implements KeyListener{
 		button_7.setFont(new Font("DejaVu Sans", Font.BOLD, 14));
 		button_7.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				tf = tf + "2";
-				textField.setText(tf);
+				appendDigits('2');
 			}
 		});
 		GridBagConstraints gbc_button_7 = new GridBagConstraints();
@@ -339,8 +339,7 @@ public class Calculator2 implements KeyListener{
 		button_8.setFont(new Font("DejaVu Sans", Font.BOLD, 14));
 		button_8.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				tf = tf + "3";
-				textField.setText(tf);
+				appendDigits('3');
 			}
 		});
 		GridBagConstraints gbc_button_8 = new GridBagConstraints();
@@ -354,8 +353,7 @@ public class Calculator2 implements KeyListener{
 		button_12.setFont(new Font("DejaVu Sans", Font.BOLD, 14));
 		button_12.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				tf = tf + "(";
-				textField.setText(tf);
+				appendDigits('(');
 			}
 		});
 		GridBagConstraints gbc_button_12 = new GridBagConstraints();
@@ -369,8 +367,7 @@ public class Calculator2 implements KeyListener{
 		button_9.setFont(new Font("DejaVu Sans", Font.BOLD, 14));
 		button_9.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				tf = tf + "0";
-				textField.setText(tf);
+				appendDigits('0');
 			}
 		});
 		GridBagConstraints gbc_button_9 = new GridBagConstraints();
@@ -384,8 +381,7 @@ public class Calculator2 implements KeyListener{
 		button_10.setFont(new Font("DejaVu Sans", Font.BOLD, 14));
 		button_10.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				tf = tf + ".";
-				textField.setText(tf);
+				appendDigits('.');
 			}
 		});
 		GridBagConstraints gbc_button_10 = new GridBagConstraints();
@@ -399,10 +395,7 @@ public class Calculator2 implements KeyListener{
 		button_11.setFont(new Font("DejaVu Sans", Font.BOLD, 14));
 		button_11.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//TODO write method to conduct calculation from String and print answer in next line.
-				getResult = new Calculations(tf);
-				tf = tf + " = " + getResult; 
-				textField.setText(tf);
+				getTotal();
 			}
 		});
 		GridBagConstraints gbc_button_11 = new GridBagConstraints();
@@ -415,8 +408,7 @@ public class Calculator2 implements KeyListener{
 		button_17 = new JButton(")");
 		button_17.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				tf = tf + ")";
-				textField.setText(tf);
+				appendDigits(')');
 			}
 		});
 		button_17.setFont(new Font("DejaVu Sans", Font.BOLD, 14));
@@ -426,115 +418,37 @@ public class Calculator2 implements KeyListener{
 		gbc_button_17.gridy = 4;
 		panel_1.add(button_17, gbc_button_17);
 		
-		frame.pack();
-		
-		
+		frame.pack();		
 	}
 
+	/**
+	 * Set key action for keyTyped
+	 */
 	@Override
 	public void keyTyped(KeyEvent e) {
 		
+		char c = e.getKeyChar();
 		
-		if(e.getKeyChar()==KeyEvent.VK_ESCAPE){
-			if(tf.length()>0){
-				tf = "";
-			}		
-			textField.setText(tf);
+		if (Character.isDigit(c) || c=='(' || c == ')' || c=='.'){
+			appendDigits(c);
 		}
 		
-		if(e.getKeyChar()=='*'){
-			tf = tf + " x ";
-			textField.setText(tf);
+		if(c==KeyEvent.VK_ESCAPE){
+			textField.setText("");
+			typeField.setText("0");
 		}
 		
-		if(e.getKeyChar()==KeyEvent.VK_SLASH){
-			tf = tf + " / ";
-			textField.setText(tf);
+		if(c=='*' || c=='/' || c=='+' || c=='-'){
+			appendOperation(c);
 		}
 		
-		if(e.getKeyChar()==KeyEvent.VK_BACK_SPACE){
-			if(tf.length()>0){
-				if (tf.substring(tf.length() -1).equals(" "))
-					tf = tf.substring(0,tf.length()-3);
-				else
-					tf = tf.substring(0, tf.length()-1);
-			}					
-			textField.setText(tf);
+		if(c==KeyEvent.VK_BACK_SPACE){
+			undo();
 		}
-		
-		if(e.getKeyChar()=='+'){
-			tf = tf + " + ";				
-			textField.setText(tf);
-		}
-		
-		if(e.getKeyChar()=='-'){
-			tf = tf + " - ";				
-			textField.setText(tf);
-		}
-		
-		if(e.getKeyChar()==KeyEvent.VK_PERIOD){
-			tf = tf + ".";
-			textField.setText(tf);
-		}
-		
-		if(e.getKeyChar()==KeyEvent.VK_0){
-			tf = tf + "0";
-			textField.setText(tf);
-		}
-		
-		if(e.getKeyChar()==KeyEvent.VK_1){
-			tf = tf + "1";
-			textField.setText(tf);
-		}
-		
-		if(e.getKeyChar()==KeyEvent.VK_2){
-			tf = tf + "2";
-			textField.setText(tf);
-		}
-		
-		if(e.getKeyChar()==KeyEvent.VK_3){
-			tf = tf + "3";
-			textField.setText(tf);
-		}
-		
-		if(e.getKeyChar()==KeyEvent.VK_4){
-			tf = tf + "4";
-			textField.setText(tf);
-		}
-		
-		if(e.getKeyChar()==KeyEvent.VK_5){
-			tf = tf + "5";
-			textField.setText(tf);
-		}
-		
-		if(e.getKeyChar()==KeyEvent.VK_6){
-			tf = tf + "6";
-			textField.setText(tf);
-		}
-		
-		if(e.getKeyChar()==KeyEvent.VK_7){
-			tf = tf + "7";
-			textField.setText(tf);
-		}
-		
-		if(e.getKeyChar()==KeyEvent.VK_8){
-			tf = tf + "8";
-			textField.setText(tf);
-		}
-		
-		if(e.getKeyChar()==KeyEvent.VK_9){
-			tf = tf + "9";
-			textField.setText(tf);
-		}
-		
-		if(e.getKeyChar()=='='){
-			tf = tf + " = ";		
-			//TODO write getResult method.
-			textField.setText(tf);
-		}
-		
 
-		
+		if(c=='=' || c==KeyEvent.VK_ENTER){	
+			getTotal();
+		}
 	}
 
 	@Override
@@ -548,5 +462,75 @@ public class Calculator2 implements KeyListener{
 		// TODO Auto-generated method stub
 		
 	}
-
+	
+	/**
+	 * Append operand to textField.
+	 * @param operand
+	 */
+	private void appendOperation(char operand){
+		textField.append(" " + operand + " ");
+	}
+	
+	/**
+	 * Append numbers to textField and display number input. Allows for decimals.
+	 * @param num
+	 */
+	private void appendDigits(char num){
+		
+		Document doc = typeField.getDocument();
+		int position = doc.getLength()-1;
+		String display = num + "";
+		
+		textField.append(num + "");
+		try{
+			if (num == '.' || doc.getText(position, 1).equals(".")){
+				doc.insertString(position, num + "", null);
+			}
+			else if (num == '(' || num == ')')
+				display = "";
+			
+			typeField.setText(display);
+			
+		}catch(BadLocationException ex){
+			
+		}
+	}
+	
+	/**
+	 * Get the total of the equation by converting the textField into a document and reading the last line.
+	 */
+	private void getTotal(){
+		String tf = "";
+		try{
+			int offset=textField.getLineOfOffset(textField.getCaretPosition());
+			int start = textField.getLineStartOffset(offset);
+			int end = textField.getLineEndOffset(offset);
+			tf = textField.getText(start,(end-start));
+			result = new Calculations(tf);
+			textField.append(" = " + result + "\n");
+			typeField.setText(result + "");
+		}catch(Exception error){
+			typeField.setText("Invalid input");
+			textField.append(" = " + result + "\n");
+		}
+	}
+	
+	/**
+	 * Backspace erases the last digit in the text area. Shortcoming - Doesn't erase completely through an equal sign.
+	 */
+	private void undo(){
+		Document doc = textField.getDocument();
+		int position = doc.getLength()-1;
+		try{
+				if(doc.getText(position, 1).equals(" "))
+					doc.remove((position-1), 2);
+				else
+					doc.remove(position, 1);
+			
+				typeField.setText("0");
+				
+		}catch (BadLocationException ex){
+			typeField.setText("Nothing left");
+		}
+	}
 }
