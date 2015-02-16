@@ -12,7 +12,6 @@ public class Calculations{
 	
 	protected String str;
 	protected Double answer;
-	protected String result;
 	
 	public Calculations(){
 		this.str = "";
@@ -23,7 +22,6 @@ public class Calculations{
 	public Calculations(String text) {
 		this.str = text;
 		answer = calc();
-		this.result = text + " = " + answer.toString();
 	}
 	
 	/**
@@ -129,13 +127,9 @@ public class Calculations{
 	 * If answer is a whole number, remove unnecessary zeros in the back. 
 	 */
 	public String toString() {
-		if(Math.floor(answer) == answer){
-			int truncate = answer.intValue();
-			return truncate + "";
-		}
-		else{
-			return answer + "";
-		}
+		if (answer%1 == 0)
+			return answer.intValue() + "";
+		return answer + "";
 		
 	}
 	
