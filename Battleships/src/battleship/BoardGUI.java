@@ -11,6 +11,12 @@ import javax.swing.JTextArea;
 import java.awt.FlowLayout;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
+import java.awt.GridLayout;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import javax.swing.SwingConstants;
+import javax.swing.JLabel;
 
 public class BoardGUI {
 
@@ -46,26 +52,33 @@ public class BoardGUI {
 		frame = new JFrame("Battleships");
 		frame.setBounds(100, 100, 450, 300);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[]{434, 0};
-		gridBagLayout.rowHeights = new int[]{2, 0};
-		gridBagLayout.columnWeights = new double[]{0.0, Double.MIN_VALUE};
-		gridBagLayout.rowWeights = new double[]{0.0, Double.MIN_VALUE};
-		frame.getContentPane().setLayout(gridBagLayout);
+		//TODO if game not finished, confirm if want to end game.
+		frame.getContentPane().setLayout(new BorderLayout(0, 0));
 		
-		JPanel panel = new JPanel();
-		FlowLayout flowLayout = (FlowLayout) panel.getLayout();
-		flowLayout.setVgap(0);
-		flowLayout.setHgap(0);
-		GridBagConstraints gbc_panel = new GridBagConstraints();
-		gbc_panel.anchor = GridBagConstraints.NORTH;
-		gbc_panel.fill = GridBagConstraints.HORIZONTAL;
-		gbc_panel.gridx = 0;
-		gbc_panel.gridy = 0;
-		frame.getContentPane().add(panel, gbc_panel);
+		JPanel menu = new JPanel();
+		frame.getContentPane().add(menu, BorderLayout.NORTH);
 		
-		JScrollPane scrollPane = new JScrollPane();
-		panel.add(scrollPane);
+		JPanel playerPanel = new JPanel();
+		frame.getContentPane().add(playerPanel, BorderLayout.WEST);
+		playerPanel.setLayout(new GridLayout(1, 0, 0, 0));
+		
+		JPanel opponentPanel = new JPanel();
+		frame.getContentPane().add(opponentPanel, BorderLayout.EAST);
+		opponentPanel.setLayout(new GridLayout(1, 0, 0, 0));
+		
+		JPanel buttons = new JPanel();
+		frame.getContentPane().add(buttons, BorderLayout.SOUTH);
+		buttons.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 5));
+		
+		JButton Done = new JButton("Done");
+		Done.setHorizontalAlignment(SwingConstants.RIGHT);
+		buttons.add(Done);
+		
+		JPanel status = new JPanel();
+		frame.getContentPane().add(status, BorderLayout.CENTER);
+		
+		JLabel remain = new JLabel("Enemy Ships Remaining: ");
+		status.add(remain);
 	}
 
 }
