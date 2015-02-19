@@ -138,8 +138,9 @@ public class Calculator2 implements KeyListener{
 		btnC.setFont(new Font("DejaVu Sans", Font.BOLD, 14));
 		btnC.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				textField.setText("");
 				typeField.setText("0");
+				textField.setText("");
+				textField.requestFocusInWindow();
 			}
 		});
 		GridBagConstraints gbc_btnC = new GridBagConstraints();
@@ -434,8 +435,9 @@ public class Calculator2 implements KeyListener{
 		}
 		
 		if(c==KeyEvent.VK_ESCAPE){
-			textField.setText("");
 			typeField.setText("0");
+			textField.setText("");
+			textField.requestFocusInWindow();
 		}
 		
 		if(c=='*' || c=='/' || c=='+' || c=='-'){
